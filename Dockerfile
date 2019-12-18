@@ -1,19 +1,30 @@
-# Copyright 2015 Google Inc. All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-FROM golang:1.10
-WORKDIR /go/src/app
-COPY . .
-RUN go install -v
-CMD ["app"]
+# Copies in our code and runs NPM Install
+FROM node:12.14.0-alpine as builder
+WORKDIR /usr/src/app
+COPY package* ./
+COPY src/ src/
+RUN ["npm", "install"]
+# Lints Code
+FROM node:12.14.0-alpine as linting
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/ .
+RUN ["npm", "lint"]
+# Gets Sonarqube Scanner from Dockerhub and runs it
+FROM newmitch/sonar-scanner:latest as sonarqube
+COPY --from=builder /usr/src/app/src /root/src
+# Runs Unit Tests
+FROM node:12.14.0-alpine as unit-tests
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/ .
+RUN ["npm", "test"]
+# Runs Accessibility Tests
+FROM node:12.14.0-alpine as access-tests
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/ .
+RUN ["npm", "access-tests"]
+# Starts and Serves Web Page
+FROM node:12.14.0-alpine as serve
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app ./
+COPY --from=builder package* ./
+RUN ["npm", "start"]

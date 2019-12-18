@@ -52,6 +52,23 @@ spec:
         }
       }
     }
+    stage("Build image") {
+      steps {
+        script {
+                    myapp = docker.build("${env.DOCKER_REG}:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+        stage("Push image") {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', env.DOCKER_REG_CRED) {
+                            myapp.push("latest")
+                            myapp.push("${env.BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
     /*stage('Build and push image with Container Builder') {
       steps {
         script {
