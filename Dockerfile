@@ -23,6 +23,5 @@ RUN ["npm", "run", "access-tests"]
 FROM node:12.14.0-alpine as serve
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/ .
-COPY --from=builder package* ./
 RUN ["npm", "run", "start"]
 
