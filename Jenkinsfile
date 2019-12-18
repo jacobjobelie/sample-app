@@ -41,6 +41,17 @@ spec:
     command:
     - cat
     tty: true
+  - name: docker
+    image: docker:1.11
+    command: ['cat']
+    tty: true
+    volumeMounts:
+    - name: dockersock
+      mountPath: /var/run/docker.sock
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: /var/run/docker.sock
 """
 }
   }
@@ -54,12 +65,10 @@ spec:
     }
     stage("Build image") {
       steps {
-        script {
-                    myapp = docker.build("${env.DOCKER_REG}:${env.BUILD_NUMBER}")
-                }
-            }
+        container('docker') {
+          sh "docker build -t ${env.DOCKER_REG}:${env.BUILD_NUMBER} ."
         }
-        stage("Push image") {
+        /*stage("Push image") {
             steps {
                 script {
                     docker.withRegistry('https://registry.hub.docker.com', env.DOCKER_REG_CRED) {
@@ -68,7 +77,7 @@ spec:
                     }
                 }
             }
-        }
+        }*/
     /*stage('Build and push image with Container Builder') {
       steps {
         script {
