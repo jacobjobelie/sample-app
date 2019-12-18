@@ -47,9 +47,7 @@ spec:
   stages {
     stage('Test') {
       steps {
-        steps {
-          sh 'node --version'
-        }
+        sh 'node --version'
       }
     }
     /*stage('Build and push image with Container Builder') {
