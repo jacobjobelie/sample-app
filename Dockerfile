@@ -8,23 +8,20 @@ RUN ["npm", "install"]
 FROM node:12.14.0-alpine as linting
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/ .
-RUN ["npm", "lint"]
-# Gets Sonarqube Scanner from Dockerhub and runs it
-FROM newmitch/sonar-scanner:latest as sonarqube
-COPY --from=builder /usr/src/app/src /root/src
+RUN ["npm", "run", "lint"]
 # Runs Unit Tests
 FROM node:12.14.0-alpine as unit-tests
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/ .
-RUN ["npm", "test"]
+RUN ["npm", "run", "test"]
 # Runs Accessibility Tests
 FROM node:12.14.0-alpine as access-tests
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app/ .
-RUN ["npm", "access-tests"]
+RUN ["npm", "run", "access-tests"]
 # Starts and Serves Web Page
 FROM node:12.14.0-alpine as serve
 WORKDIR /usr/src/app
 COPY --from=builder /usr/src/app ./
 COPY --from=builder package* ./
-RUN ["npm", "start"]
+RUN ["npm", "run", "start"]

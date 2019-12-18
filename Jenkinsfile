@@ -66,7 +66,15 @@ pipeline {
     stage("Build image") {
       steps {
         container('docker') {
-          sh "docker build -t ${env.DOCKER_REG}:${env.BUILD_NUMBER} ."
+          withCredentials([[$class: 'UsernamePasswordMultiBinding',
+          credentialsId: 'docker_samuelrad',
+          usernameVariable: 'DOCKER_HUB_USER',
+          passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
+          sh """
+            docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
+            docker build -t ${env.DOCKER_REG}:${env.BUILD_NUMBER} ."
+            """
+          }
         }
       }
     }
