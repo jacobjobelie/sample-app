@@ -68,6 +68,7 @@ spec:
         container('docker') {
           sh "docker build -t ${env.DOCKER_REG}:${env.BUILD_NUMBER} ."
         }
+      }
         /*stage("Push image") {
             steps {
                 script {
