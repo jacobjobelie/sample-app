@@ -9,7 +9,7 @@ pipeline {
     IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}:${env.BRANCH_NAME}.${env.BUILD_NUMBER}"
     JENKINS_CRED = "${PROJECT}"
     DOCKER_REG = "samuelrad/first"
-    DOCKER_REG_CRED = "dockerhub"
+    DOCKER_REG_CRED = "docker_samuelrad"
   }
 
   agent {
