@@ -63,6 +63,13 @@ pipeline {
         }
       }
     }
+     stage('Test kubectl') {
+      steps {
+        container('kubectl') {
+          sh 'kubectl version --short'
+        }
+      }
+    }
     stage("Build image") {
       steps {
         container('docker') {
@@ -73,6 +80,20 @@ pipeline {
           sh """
             docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker build -t ${env.DOCKER_REG}:${env.BUILD_NUMBER} .
+            """
+          }
+        }
+      }
+    }
+    stage("Build image") {
+      steps {
+        container('docker') {
+          withCredentials([[$class: 'UsernamePasswordMultiBinding',
+          credentialsId: 'docker_samuelrad',
+          usernameVariable: 'DOCKER_HUB_USER',
+          passwordVariable: 'DOCKER_HUB_PASSWORD']]) {
+          sh """
+            docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_PASSWORD}
             docker push  ${env.DOCKER_REG}
             """
           }
