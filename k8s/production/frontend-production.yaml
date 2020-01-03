@@ -28,17 +28,17 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: gcr.io/cloud-solutions-images/gceme:1.0.0
+        image: samuelrad/first:latest
         resources:
           limits:
-            memory: "500Mi"
+            memory: "50Mi"
             cpu: "100m"
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
-            path: /healthz
+            path: /
             port: 80
-        command: ["sh", "-c", "app -frontend=true -backend-service=http://gceme-backend:8080 -port=80"]
+        # command: ["sh", "-c", "app -frontend=true -backend-service=http://gceme-backend:8080 -port=80"]
         ports:
         - name: frontend
           containerPort: 80

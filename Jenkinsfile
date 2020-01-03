@@ -100,5 +100,16 @@ pipeline {
         }
       }
     }
+    stage('Deploy Production') {
+      // Production branch
+      when { branch 'master' }
+      steps{
+        container('kubectl') {
+        // Change deployed image in canary to the one we just built
+          sh("sed -i.bak 's#samuelrad/first:1.0.0#${IMAGE_TAG}#' ./k8s/production/*.yaml")
+          sh("kubectl apply -f ./k8s/production/*.yaml")
+        }
+      }
+    }
   }
 }

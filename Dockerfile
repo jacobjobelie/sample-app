@@ -33,14 +33,14 @@ FROM nginx:alpine
 RUN apk add --no-cache --virtual .build-deps \
         nano
 
+# Override Nginx's default config
 RUN rm /etc/nginx/nginx.conf
 COPY --from=builder /usr/src/app/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /usr/src/app/nginx/nginx.feedback.conf /etc/nginx/sites-available/feedback.conf
 #
 RUN mkdir -p /etc/nginx/sites-enabled/ && ln -s /etc/nginx/sites-available/feedback.conf etc/nginx/sites-enabled/feedback.conf && rm /etc/nginx/conf.d/default.conf
 
-WORKDIR /usr/src/app
-COPY --from=build /usr/src/app/public /usr/share/nginx/html/
+COPY --from=build /usr/src/app/public /usr/share/nginx/html
 
 EXPOSE 80 443
 
