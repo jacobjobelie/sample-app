@@ -63,7 +63,7 @@ pipeline {
         }
       }
     }
-     stage('Test kubectl') {
+    stage('Test kubectl') {
       steps {
         container('kubectl') {
           sh 'kubectl version --short'
@@ -85,7 +85,7 @@ pipeline {
         }
       }
     }
-    stage("Build image") {
+    stage("Push image") {
       steps {
         container('docker') {
           withCredentials([[$class: 'UsernamePasswordMultiBinding',
